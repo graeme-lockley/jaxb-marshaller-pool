@@ -42,6 +42,12 @@ public class MarshallerPoolTest {
         assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT));
     }
 
+    @Test(expected = javax.xml.bind.MarshalException.class)
+    public void given_an_invalid_payment_with_schema_validation_should_throw_an_exception() throws Exception {
+        MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT);
+    }
+
     @Test
     public void given_two_nested_marshaller_requests_then_two_marshallers_will_be_used() throws Exception {
         assertEquals(0, MarshallerPool.get(Payment.class).getMarshallers().count());
@@ -55,12 +61,6 @@ public class MarshallerPoolTest {
         }, VALID_PAYMENT);
 
         assertEquals(2, MarshallerPool.get(Payment.class).getMarshallers().count());
-    }
-
-    @Test(expected = javax.xml.bind.MarshalException.class)
-    public void given_an_invalid_payment_with_schema_validation_should_throw_an_exception() throws Exception {
-        MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
-        MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT);
     }
 
     private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {
