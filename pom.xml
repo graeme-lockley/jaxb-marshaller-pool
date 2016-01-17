@@ -31,9 +31,14 @@
                 <version>0.13.0</version>
                 <executions>
                     <execution>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <schemaDirectory>src/test/resources</schemaDirectory>
+                            <generateDirectory>target/generated-test-sources</generateDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
