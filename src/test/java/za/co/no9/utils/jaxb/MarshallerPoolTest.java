@@ -1,12 +1,41 @@
 package za.co.no9.utils.jaxb;
 
+import generated.Payment;
+import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 public class MarshallerPoolTest {
+    private static Payment VALID_PAYMENT = getPayment("PAY1", "123.40", "S1", "T1", "10/3/2015");
+    private static String VALID_PAYMENT_XML_STRING = "<payment><payment-reference>PAY1</payment-reference><source-account-number>S1</source-account-number><target-account-number>T1</target-account-number><when>10/3/2015</when><amount>123.40</amount></payment>";
+    private static Payment INVALID_PAYMENT = getPayment(null, "123.40", "S1", "T1", "10/3/2015");
+    private static String INVALID_PAYMENT_XML_STRING = "<payment><source-account-number>S1</source-account-number><target-account-number>T1</target-account-number><when>10/3/2015</when><amount>123.40</amount></payment>";
+
+    @Before
+    public void before() {
+        MarshallerPool.reset();
+    }
+
     @Test
-    public void given_a_class_name_should_return_a_marshaller_associated_with_that_class() throws Exception {
-        assertNotNull(MarshallerPool.get(generated.Payment.class));
+    public void given_a_valid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
+        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(VALID_PAYMENT));
+    }
+
+    @Test
+    public void given_an_invalid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
+        assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(INVALID_PAYMENT));
+    }
+
+    private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {
+        Payment payment = new Payment();
+
+        payment.setPaymentReference(reference);
+        payment.setAmount(amount);
+        payment.setSourceAccountNumber(sourceAccountNumber);
+        payment.setTargetAccountNumber(targetAccountNumber);
+        payment.setWhen(when);
+
+        return payment;
     }
 }

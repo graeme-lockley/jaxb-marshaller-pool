@@ -3,41 +3,12 @@
     <xs:element name="payment">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="creator" type="CreatorType" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="reference" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="when" type="TimestampType" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="action-date" type="ActionDateType" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="currency" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="payment-reference" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="source-account-number" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="target-account-number" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="when" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="amount" type="xs:string" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="debit-leg" type="TransactionLegType" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="credit-leg" type="TransactionLegType" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:complexType name="CreatorType">
-        <xs:attribute name="application-name" type="xs:string" use="required"/>
-        <xs:attribute name="client-id" type="xs:string" use="required"/>
-        <xs:attribute name="correlation-id" type="xs:string" use="optional"/>
-    </xs:complexType>
-    <xs:complexType name="TimestampType">
-        <xs:attribute name="year" type="xs:string" use="required"/>
-        <xs:attribute name="month" type="xs:string" use="required"/>
-        <xs:attribute name="day" type="xs:string" use="required"/>
-        <xs:attribute name="hour" type="xs:string" use="required"/>
-        <xs:attribute name="minute" type="xs:string" use="required"/>
-        <xs:attribute name="second" type="xs:string" use="required"/>
-    </xs:complexType>
-    <xs:complexType name="ActionDateType">
-        <xs:attribute name="year" type="xs:string" use="required"/>
-        <xs:attribute name="month" type="xs:string" use="required"/>
-        <xs:attribute name="day" type="xs:string" use="required"/>
-    </xs:complexType>
-    <xs:complexType name="TransactionLegType">
-        <xs:attribute name="application-name" type="xs:string" use="required"/>
-        <xs:attribute name="sort-code" type="xs:string" use="optional"/>
-        <xs:attribute name="account" type="xs:string" use="optional"/>
-        <xs:attribute name="name" type="xs:string" use="optional"/>
-        <xs:attribute name="reference" type="xs:string" use="optional"/>
-        <xs:attribute name="ledger-account-number" type="xs:string" use="optional"/>
-    </xs:complexType>
 </xs:schema>
