@@ -29,8 +29,8 @@ public class MarshallerConfiguration {
         return marshall;
     }
 
-    public String getClassToMarshallName() {
-        return classToMarshall.getName();
+    public Class getClassToMarshall() {
+        return classToMarshall;
     }
 
     public MarshallerConfiguration attachSchema(Schema schema) {

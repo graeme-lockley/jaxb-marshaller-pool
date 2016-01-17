@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class MarshallerPool {
-    private static Map<String, MarshallerConfiguration> CONFIGURATION = new HashMap<>();
+    private static PoolConfiguration POOL_CONFIGURATION = new PoolConfiguration();
 
     public static String marshall(Object object) throws JAXBException {
         Marshaller marshaller = get(object.getClass()).newInstance();
@@ -19,24 +19,40 @@ public class MarshallerPool {
     }
 
     public static void reset() {
-        CONFIGURATION.clear();
+        POOL_CONFIGURATION.clear();
     }
 
     public static void attachSchema(Class classToBind, Schema schema) {
         MarshallerConfiguration configuration = get(classToBind);
-        rebind(configuration.attachSchema(schema));
+        POOL_CONFIGURATION.rebind(configuration.attachSchema(schema));
     }
 
     private static MarshallerConfiguration get(Class classToBind) {
-        MarshallerConfiguration configuration = CONFIGURATION.get(classToBind.getName());
+        MarshallerConfiguration configuration = POOL_CONFIGURATION.get(classToBind);
         if (configuration == null) {
             configuration = new MarshallerConfiguration(classToBind, Optional.empty());
-            CONFIGURATION.put(classToBind.getName(), configuration);
+            POOL_CONFIGURATION.rebind(configuration);
         }
         return configuration;
     }
 
-    private static void rebind(MarshallerConfiguration configuration) {
-        CONFIGURATION.put(configuration.getClassToMarshallName(), configuration);
+    static class PoolConfiguration {
+        private Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
+
+        public void clear() {
+            configuration_items.clear();
+        }
+
+        public MarshallerConfiguration get(Class classToBind) {
+            return configuration_items.get(configurationKey(classToBind));
+        }
+
+        public void rebind(MarshallerConfiguration configuration) {
+            this.configuration_items.put(configurationKey(configuration.getClassToMarshall()), configuration);
+        }
+
+        private static String configurationKey(Class theClass) {
+            return theClass.getName();
+        }
     }
 }
