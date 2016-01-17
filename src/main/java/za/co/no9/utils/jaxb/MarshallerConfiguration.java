@@ -27,7 +27,9 @@ public class MarshallerConfiguration {
     }
 
     public void passivateMarshaller(Marshaller marshaller) {
-        marshallers.add(marshaller);
+        if (marshaller != null) {
+            marshallers.add(marshaller);
+        }
     }
 
     public Marshaller newInstance() throws JAXBException {
