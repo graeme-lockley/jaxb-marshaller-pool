@@ -27,24 +27,24 @@ public class MarshallerPoolTest {
 
     @Test
     public void given_a_valid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
-        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(VALID_PAYMENT));
+        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
     }
 
     @Test
     public void given_a_valid_payment_with_schema_validation_should_marshall_to_a_string() throws Exception {
         MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
-        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(VALID_PAYMENT));
+        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
     }
 
     @Test
     public void given_an_invalid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
-        assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(INVALID_PAYMENT));
+        assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT));
     }
 
     @Test(expected = javax.xml.bind.MarshalException.class)
     public void given_an_invalid_payment_with_schema_validation_should_throw_an_exception() throws Exception {
         MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
-        MarshallerPool.marshall(INVALID_PAYMENT);
+        MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT);
     }
 
     private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {

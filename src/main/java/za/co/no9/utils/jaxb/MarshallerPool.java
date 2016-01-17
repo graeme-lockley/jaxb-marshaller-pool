@@ -3,7 +3,6 @@ package za.co.no9.utils.jaxb;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -11,11 +10,15 @@ import java.util.Optional;
 public class MarshallerPool {
     private static PoolConfiguration POOL_CONFIGURATION = new PoolConfiguration();
 
-    public static String marshall(Object object) throws JAXBException {
-        Marshaller marshaller = get(object.getClass()).newInstance();
-        StringWriter stringWriter = new StringWriter();
-        marshaller.marshal(object, stringWriter);
-        return stringWriter.toString();
+    public static <R> R marshall(MarshallerBiFunction<R> function, Object object) throws JAXBException {
+        MarshallerConfiguration marshallerConfiguration = get(object.getClass());
+        Marshaller marshaller = null;
+        try {
+            marshaller = marshallerConfiguration.activateMarshaller();
+            return function.apply(marshaller, object);
+        } finally {
+            marshallerConfiguration.passivateMarshaller(marshaller);
+        }
     }
 
     public static void reset() {
