@@ -30,7 +30,11 @@ public class MarshallerPool {
         POOL_CONFIGURATION.rebind(configuration.attachSchema(schema));
     }
 
-    protected static MarshallerConfiguration get(Class classToBind) {
+    public static long getNumberOfMarshallers(Class classToBind) {
+        return get(classToBind).getMarshallers().count();
+    }
+
+    private static MarshallerConfiguration get(Class  classToBind) {
         MarshallerConfiguration configuration = POOL_CONFIGURATION.get(classToBind);
         if (configuration == null) {
             configuration = new MarshallerConfiguration(classToBind, Optional.empty());

@@ -49,8 +49,18 @@ public class MarshallerPoolTest {
     }
 
     @Test
+    public void given_two_sequential_marshaller_requests_then_a_single_marshaller_will_be_used() throws Exception {
+        assertEquals(0, MarshallerPool.getNumberOfMarshallers(Payment.class));
+
+        MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
+        MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
+
+        assertEquals(1, MarshallerPool.getNumberOfMarshallers(Payment.class));
+    }
+
+    @Test
     public void given_two_nested_marshaller_requests_then_two_marshallers_will_be_used() throws Exception {
-        assertEquals(0, MarshallerPool.get(Payment.class).getMarshallers().count());
+        assertEquals(0, MarshallerPool.getNumberOfMarshallers(Payment.class));
 
         MarshallerPool.marshall((m1, o1) -> {
             MarshallerPool.marshall((m2, o2) -> {
@@ -60,7 +70,7 @@ public class MarshallerPoolTest {
             return "";
         }, VALID_PAYMENT);
 
-        assertEquals(2, MarshallerPool.get(Payment.class).getMarshallers().count());
+        assertEquals(2, MarshallerPool.getNumberOfMarshallers(Payment.class));
     }
 
     private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {
