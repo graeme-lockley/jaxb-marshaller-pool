@@ -11,6 +11,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MarshallerPoolTest {
     private static Payment VALID_PAYMENT = getPayment("PAY1", "123.40", "S1", "T1", "10/3/2015");
@@ -39,6 +40,21 @@ public class MarshallerPoolTest {
     @Test
     public void given_an_invalid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
         assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT));
+    }
+
+    @Test
+    public void given_two_nested_marshaller_requests_then_two_marshallers_will_be_used() throws Exception {
+        assertEquals(0, MarshallerPool.get(Payment.class).getMarshallers().count());
+
+        MarshallerPool.marshall((m1, o1) -> {
+            MarshallerPool.marshall((m2, o2) -> {
+                assertTrue(m1 != m2);
+                return "";
+            }, VALID_PAYMENT);
+            return "";
+        }, VALID_PAYMENT);
+
+        assertEquals(2, MarshallerPool.get(Payment.class).getMarshallers().count());
     }
 
     @Test(expected = javax.xml.bind.MarshalException.class)

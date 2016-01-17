@@ -7,6 +7,7 @@ import javax.xml.validation.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class MarshallerConfiguration {
     private Class classToMarshall;
@@ -52,5 +53,9 @@ public class MarshallerConfiguration {
 
     public MarshallerConfiguration attachSchema(Schema schema) {
         return new MarshallerConfiguration(classToMarshall, Optional.of(schema));
+    }
+
+    protected Stream<Marshaller> getMarshallers() {
+        return marshallers.stream();
     }
 }
