@@ -3,6 +3,12 @@ package za.co.no9.utils.jaxb;
 import generated.Payment;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,6 +17,8 @@ public class MarshallerPoolTest {
     private static String VALID_PAYMENT_XML_STRING = "<payment><payment-reference>PAY1</payment-reference><source-account-number>S1</source-account-number><target-account-number>T1</target-account-number><when>10/3/2015</when><amount>123.40</amount></payment>";
     private static Payment INVALID_PAYMENT = getPayment(null, "123.40", "S1", "T1", "10/3/2015");
     private static String INVALID_PAYMENT_XML_STRING = "<payment><source-account-number>S1</source-account-number><target-account-number>T1</target-account-number><when>10/3/2015</when><amount>123.40</amount></payment>";
+
+    private static Schema PAYMENT_SCHEMA = loadSchema("target/test-classes/Payment.xsd");
 
     @Before
     public void before() {
@@ -23,8 +31,20 @@ public class MarshallerPoolTest {
     }
 
     @Test
+    public void given_a_valid_payment_with_schema_validation_should_marshall_to_a_string() throws Exception {
+        MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        assertEquals(VALID_PAYMENT_XML_STRING, MarshallerPool.marshall(VALID_PAYMENT));
+    }
+
+    @Test
     public void given_an_invalid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
         assertEquals(INVALID_PAYMENT_XML_STRING, MarshallerPool.marshall(INVALID_PAYMENT));
+    }
+
+    @Test(expected = javax.xml.bind.MarshalException.class)
+    public void given_an_invalid_payment_with_schema_validation_should_throw_an_exception() throws Exception {
+        MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        MarshallerPool.marshall(INVALID_PAYMENT);
     }
 
     private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {
@@ -37,5 +57,14 @@ public class MarshallerPoolTest {
         payment.setWhen(when);
 
         return payment;
+    }
+
+    private static Schema loadSchema(String schemaName) {
+        try {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            return schemaFactory.newSchema(new File(schemaName));
+        } catch (SAXException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
