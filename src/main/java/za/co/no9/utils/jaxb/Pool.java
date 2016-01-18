@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 
 public class Pool<T> {
     private final List<T> members = new ArrayList<>();
-    private final MemberSupplier<T> memberSupplier;
+    private final SupplierWithCE<T, JAXBException> memberSupplier;
 
-    public Pool(MemberSupplier<T> memberSupplier) {
+    public Pool(SupplierWithCE<T, JAXBException> memberSupplier) {
         this.memberSupplier = memberSupplier;
     }
 

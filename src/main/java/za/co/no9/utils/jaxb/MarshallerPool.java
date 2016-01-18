@@ -8,7 +8,7 @@ import java.util.Optional;
 public class MarshallerPool {
     private static MarshallerPoolConfiguration POOL_CONFIGURATION = new MarshallerPoolConfiguration();
 
-    public static <R> R marshall(MarshallerBiFunction<R> function, Object object) throws JAXBException {
+    public static <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
         MarshallerConfiguration marshallerConfiguration = get(object.getClass());
         Marshaller marshaller = null;
         try {
