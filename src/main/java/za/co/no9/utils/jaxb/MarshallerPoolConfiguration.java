@@ -3,18 +3,18 @@ package za.co.no9.utils.jaxb;
 import java.util.HashMap;
 import java.util.Map;
 
-class MarshallerPoolConfiguration {
+public class MarshallerPoolConfiguration {
     private Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
 
-    public void clear() {
+    public synchronized void clear() {
         configuration_items.clear();
     }
 
-    public MarshallerConfiguration get(Class classToBind) {
+    public synchronized MarshallerConfiguration get(Class classToBind) {
         return configuration_items.get(configurationKey(classToBind));
     }
 
-    public void rebind(MarshallerConfiguration configuration) {
+    public synchronized void rebind(MarshallerConfiguration configuration) {
         this.configuration_items.put(configurationKey(configuration.getClassToMarshall()), configuration);
     }
 
