@@ -1,20 +1,19 @@
 package za.co.no9.utils.jaxb;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Marshallers {
-    private List<Marshaller> marshallers = new ArrayList<>();
-    private MarshallerSupplier<Marshaller> marshallerSupplier;
+public class Pool<T> {
+    private List<T> marshallers = new ArrayList<>();
+    private MarshallerSupplier<T> marshallerSupplier;
 
-    public Marshallers(MarshallerSupplier<Marshaller> marshallerSupplier) {
+    public Pool(MarshallerSupplier<T> marshallerSupplier) {
         this.marshallerSupplier = marshallerSupplier;
     }
 
-    public Marshaller activateMarshaller() throws JAXBException {
+    public T activateMarshaller() throws JAXBException {
         if (marshallers.isEmpty()) {
             return marshallerSupplier.get();
         } else {
@@ -22,13 +21,13 @@ public class Marshallers {
         }
     }
 
-    public void passivateMarshaller(Marshaller marshaller) {
+    public void passivateMarshaller(T marshaller) {
         if (marshaller != null) {
             marshallers.add(marshaller);
         }
     }
 
-    public Stream<Marshaller> stream() {
+    public Stream<T> stream() {
         return marshallers.stream();
     }
 }

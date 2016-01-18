@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class MarshallerConfiguration {
     private Class classToMarshall;
     private Optional<Schema> schema;
-    private Marshallers marshallers = new Marshallers(this::newInstance);
+    private Pool<Marshaller> marshallers = new Pool<>(this::newInstance);
 
     public MarshallerConfiguration(Class classToMarshall, Optional<Schema> schema) {
         this.classToMarshall = classToMarshall;
