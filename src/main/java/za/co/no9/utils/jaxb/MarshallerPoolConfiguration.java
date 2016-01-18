@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MarshallerPoolConfiguration {
-    private Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
+    private final Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
 
     public synchronized void clear() {
         configuration_items.clear();

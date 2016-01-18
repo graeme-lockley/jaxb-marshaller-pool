@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MarshallerConfiguration {
-    private Class classToMarshall;
-    private Optional<Schema> schema;
-    private Pool<Marshaller> marshallers = new Pool<>(this::newInstance);
+    private final Class classToMarshall;
+    private final Optional<Schema> schema;
+    private final Pool<Marshaller> marshallers = new Pool<>(this::newInstance);
 
     public MarshallerConfiguration(Class classToMarshall, Optional<Schema> schema) {
         this.classToMarshall = classToMarshall;
