@@ -4,15 +4,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MarshallerConfiguration {
     private Class classToMarshall;
     private Optional<Schema> schema;
-    private List<Marshaller> marshallers = new ArrayList<>();
+    private Marshallers marshallers = new Marshallers(this::newInstance);
 
     public MarshallerConfiguration(Class classToMarshall, Optional<Schema> schema) {
         this.classToMarshall = classToMarshall;
@@ -20,20 +18,14 @@ public class MarshallerConfiguration {
     }
 
     public Marshaller activateMarshaller() throws JAXBException {
-        if (marshallers.isEmpty()) {
-            return newInstance();
-        } else {
-            return marshallers.remove(marshallers.size() - 1);
-        }
+        return marshallers.activateMarshaller();
     }
 
     public void passivateMarshaller(Marshaller marshaller) {
-        if (marshaller != null) {
-            marshallers.add(marshaller);
-        }
+        marshallers.passivateMarshaller(marshaller);
     }
 
-    public Marshaller newInstance() throws JAXBException {
+    private Marshaller newInstance() throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(classToMarshall);
 
         Marshaller marshall = context.createMarshaller();
