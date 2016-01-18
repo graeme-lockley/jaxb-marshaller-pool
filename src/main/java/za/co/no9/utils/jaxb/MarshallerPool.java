@@ -3,12 +3,10 @@ package za.co.no9.utils.jaxb;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class MarshallerPool {
-    private static PoolConfiguration POOL_CONFIGURATION = new PoolConfiguration();
+    private static MarshallerPoolConfiguration POOL_CONFIGURATION = new MarshallerPoolConfiguration();
 
     public static <R> R marshall(MarshallerBiFunction<R> function, Object object) throws JAXBException {
         MarshallerConfiguration marshallerConfiguration = get(object.getClass());
@@ -43,23 +41,4 @@ public class MarshallerPool {
         return configuration;
     }
 
-    static class PoolConfiguration {
-        private Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
-
-        public void clear() {
-            configuration_items.clear();
-        }
-
-        public MarshallerConfiguration get(Class classToBind) {
-            return configuration_items.get(configurationKey(classToBind));
-        }
-
-        public void rebind(MarshallerConfiguration configuration) {
-            this.configuration_items.put(configurationKey(configuration.getClassToMarshall()), configuration);
-        }
-
-        private static String configurationKey(Class theClass) {
-            return theClass.getName();
-        }
-    }
 }
