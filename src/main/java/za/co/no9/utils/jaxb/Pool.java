@@ -6,28 +6,28 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Pool<T> {
-    private List<T> marshallers = new ArrayList<>();
-    private MarshallerSupplier<T> marshallerSupplier;
+    private List<T> members = new ArrayList<>();
+    private MemberSupplier<T> memberSupplier;
 
-    public Pool(MarshallerSupplier<T> marshallerSupplier) {
-        this.marshallerSupplier = marshallerSupplier;
+    public Pool(MemberSupplier<T> memberSupplier) {
+        this.memberSupplier = memberSupplier;
     }
 
-    public T activateMarshaller() throws JAXBException {
-        if (marshallers.isEmpty()) {
-            return marshallerSupplier.get();
+    public T activate() throws JAXBException {
+        if (members.isEmpty()) {
+            return memberSupplier.get();
         } else {
-            return marshallers.remove(marshallers.size() - 1);
+            return members.remove(members.size() - 1);
         }
     }
 
-    public void passivateMarshaller(T marshaller) {
+    public void passivate(T marshaller) {
         if (marshaller != null) {
-            marshallers.add(marshaller);
+            members.add(marshaller);
         }
     }
 
     public Stream<T> stream() {
-        return marshallers.stream();
+        return members.stream();
     }
 }

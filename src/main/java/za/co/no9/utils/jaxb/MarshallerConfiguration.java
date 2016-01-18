@@ -18,11 +18,11 @@ public class MarshallerConfiguration {
     }
 
     public Marshaller activateMarshaller() throws JAXBException {
-        return marshallers.activateMarshaller();
+        return marshallers.activate();
     }
 
     public void passivateMarshaller(Marshaller marshaller) {
-        marshallers.passivateMarshaller(marshaller);
+        marshallers.passivate(marshaller);
     }
 
     private Marshaller newInstance() throws JAXBException {
