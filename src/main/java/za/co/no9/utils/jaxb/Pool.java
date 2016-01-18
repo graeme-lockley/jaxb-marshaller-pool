@@ -13,21 +13,17 @@ public class Pool<T> {
         this.memberSupplier = memberSupplier;
     }
 
-    public T activate() throws JAXBException {
-        synchronized (members) {
-            if (members.isEmpty()) {
-                return memberSupplier.get();
-            } else {
-                return members.remove(members.size() - 1);
-            }
+    public synchronized T activate() throws JAXBException {
+        if (members.isEmpty()) {
+            return memberSupplier.get();
+        } else {
+            return members.remove(members.size() - 1);
         }
     }
 
-    public void passivate(T member) {
-        synchronized (members) {
-            if (member != null) {
-                members.add(member);
-            }
+    public synchronized void passivate(T member) {
+        if (member != null) {
+            members.add(member);
         }
     }
 
