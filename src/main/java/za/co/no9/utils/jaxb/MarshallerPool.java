@@ -40,5 +40,4 @@ public class MarshallerPool {
         }
         return configuration;
     }
-
 }
