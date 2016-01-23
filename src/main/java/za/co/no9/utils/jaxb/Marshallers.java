@@ -5,7 +5,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import java.util.Optional;
 
-public class MarshallerPool {
+public class Marshallers {
     private static MarshallerPoolConfiguration POOL_CONFIGURATION = new MarshallerPoolConfiguration();
 
     public static <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Pool<T> {
+class Pool<T> {
     private final List<T> members = new ArrayList<>();
     private final SupplierWithCE<T, JAXBException> memberSupplier;
 

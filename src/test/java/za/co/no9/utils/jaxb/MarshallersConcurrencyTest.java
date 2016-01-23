@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static za.co.no9.utils.jaxb.TestUtils.getPayment;
 import static za.co.no9.utils.jaxb.TestUtils.loadSchema;
 
-public class MarshallerPoolConcurrencyTest {
+public class MarshallersConcurrencyTest {
     private static Payment VALID_PAYMENT = getPayment("PAY1", "123.40", "S1", "T1", "10/3/2015");
 
     private static Schema PAYMENT_SCHEMA = loadSchema("target/test-classes/Payment.xsd");
@@ -27,7 +27,7 @@ public class MarshallerPoolConcurrencyTest {
 
     @Before
     public void before() {
-        MarshallerPool.reset();
+        Marshallers.reset();
         MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerConfiguration::new;
     }
 
@@ -40,7 +40,7 @@ public class MarshallerPoolConcurrencyTest {
     public void given_multiple_threads_simulating_marshall_then_the_activate_passivate_auditing_should_be_fine() throws Exception {
         AtomicBoolean anyErrors = new AtomicBoolean(false);
 
-        MarshallerPool.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        Marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
         ExecutorService es = Executors.newCachedThreadPool();
         for (int lp = 0; lp < NUMBER_OF_THREADS; lp += 1) {
             es.execute(new MarshallerThread(anyErrors, VALID_PAYMENT));
@@ -75,9 +75,9 @@ class MarshallerThread implements Runnable {
     @Override
     public void run() {
         try {
-            for (int lp = 0; lp < MarshallerPoolConcurrencyTest.ITERATIONS_PER_THREAD; lp += 1) {
+            for (int lp = 0; lp < MarshallersConcurrencyTest.ITERATIONS_PER_THREAD; lp += 1) {
                 try {
-                    MarshallerPool.marshall(toStringMarshallerWithRandomDelay, payment);
+                    Marshallers.marshall(toStringMarshallerWithRandomDelay, payment);
                 } catch (JAXBException ex) {
                     throw new RuntimeException(ex);
                 }
