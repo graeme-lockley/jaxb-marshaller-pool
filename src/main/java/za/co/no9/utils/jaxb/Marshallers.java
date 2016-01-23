@@ -6,7 +6,7 @@ import javax.xml.validation.Schema;
 import java.util.Optional;
 
 public class Marshallers {
-    private static MarshallerPoolConfiguration POOL_CONFIGURATION = new MarshallerPoolConfiguration();
+    private static MarshallersPool POOL_CONFIGURATION = new MarshallersPool();
 
     public static <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
         MarshallerConfiguration marshallerConfiguration = get(object.getClass());

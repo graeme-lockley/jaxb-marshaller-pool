@@ -3,7 +3,7 @@ package za.co.no9.utils.jaxb;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MarshallerPoolConfiguration {
+class MarshallersPool {
     private final Map<String, MarshallerConfiguration> configuration_items = new HashMap<>();
 
     public synchronized void clear() {
