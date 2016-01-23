@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-public class MarshallerConfiguration {
+public class MarshallerConfiguration implements MarshallerPool {
     public static BiFunction<Class, Optional<Schema>, MarshallerConfiguration> CREATE_MARSHALLER_CONFIGURATION = MarshallerConfiguration::new;
 
     private final Class classToMarshall;
