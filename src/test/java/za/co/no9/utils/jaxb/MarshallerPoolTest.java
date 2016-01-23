@@ -1,17 +1,16 @@
 package za.co.no9.utils.jaxb;
 
 import generated.Payment;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static za.co.no9.utils.jaxb.TestUtils.getPayment;
+import static za.co.no9.utils.jaxb.TestUtils.loadSchema;
 
 public class MarshallerPoolTest {
     private static Payment VALID_PAYMENT = getPayment("PAY1", "123.40", "S1", "T1", "10/3/2015");
@@ -24,6 +23,12 @@ public class MarshallerPoolTest {
     @Before
     public void before() {
         MarshallerPool.reset();
+        MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerConfiguration::new;
+    }
+
+    @After
+    public void after() {
+        MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION = MarshallerConfiguration::new;
     }
 
     @Test
@@ -71,26 +76,5 @@ public class MarshallerPoolTest {
         }, VALID_PAYMENT);
 
         assertEquals(2, MarshallerPool.getNumberOfMarshallers(Payment.class));
-    }
-
-    private static Payment getPayment(String reference, String amount, String sourceAccountNumber, String targetAccountNumber, String when) {
-        Payment payment = new Payment();
-
-        payment.setPaymentReference(reference);
-        payment.setAmount(amount);
-        payment.setSourceAccountNumber(sourceAccountNumber);
-        payment.setTargetAccountNumber(targetAccountNumber);
-        payment.setWhen(when);
-
-        return payment;
-    }
-
-    private static Schema loadSchema(String schemaName) {
-        try {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            return schemaFactory.newSchema(new File(schemaName));
-        } catch (SAXException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

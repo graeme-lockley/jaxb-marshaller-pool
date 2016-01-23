@@ -35,7 +35,7 @@ public class MarshallerPool {
     private static MarshallerConfiguration get(Class  classToBind) {
         MarshallerConfiguration configuration = POOL_CONFIGURATION.get(classToBind);
         if (configuration == null) {
-            configuration = new MarshallerConfiguration(classToBind, Optional.empty());
+            configuration = MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION.apply(classToBind, Optional.empty());
             POOL_CONFIGURATION.rebind(configuration);
         }
         return configuration;

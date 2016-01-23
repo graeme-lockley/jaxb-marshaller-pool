@@ -5,9 +5,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class MarshallerConfiguration {
+    public static BiFunction<Class, Optional<Schema>, MarshallerConfiguration> CREATE_MARSHALLER_CONFIGURATION = MarshallerConfiguration::new;
+
     private final Class classToMarshall;
     private final Optional<Schema> schema;
     private final Pool<Marshaller> marshallers = new Pool<>(this::newInstance);
@@ -44,7 +47,7 @@ public class MarshallerConfiguration {
     }
 
     public MarshallerConfiguration attachSchema(Schema schema) {
-        return new MarshallerConfiguration(classToMarshall, Optional.of(schema));
+        return CREATE_MARSHALLER_CONFIGURATION.apply(classToMarshall, Optional.of(schema));
     }
 
     protected Stream<Marshaller> getMarshallers() {
