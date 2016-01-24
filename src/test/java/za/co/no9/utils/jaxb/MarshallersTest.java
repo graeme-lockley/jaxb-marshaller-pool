@@ -20,9 +20,10 @@ public class MarshallersTest {
 
     private static Schema PAYMENT_SCHEMA = loadSchema("target/test-classes/Payment.xsd");
 
+    private Marshallers marshallers = new Marshallers();
+
     @Before
     public void before() {
-        Marshallers.reset();
         MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerPoolImpl::new;
     }
 
@@ -33,48 +34,48 @@ public class MarshallersTest {
 
     @Test
     public void given_a_valid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
-        assertEquals(VALID_PAYMENT_XML_STRING, Marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
+        assertEquals(VALID_PAYMENT_XML_STRING, marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
     }
 
     @Test
     public void given_a_valid_payment_with_schema_validation_should_marshall_to_a_string() throws Exception {
-        Marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
-        assertEquals(VALID_PAYMENT_XML_STRING, Marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
+        marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        assertEquals(VALID_PAYMENT_XML_STRING, marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT));
     }
 
     @Test
     public void given_an_invalid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {
-        assertEquals(INVALID_PAYMENT_XML_STRING, Marshallers.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT));
+        assertEquals(INVALID_PAYMENT_XML_STRING, marshallers.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT));
     }
 
     @Test(expected = javax.xml.bind.MarshalException.class)
     public void given_an_invalid_payment_with_schema_validation_should_throw_an_exception() throws Exception {
-        Marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
-        Marshallers.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT);
+        marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        marshallers.marshall(MarshallerUtils.toStringMarshaller, INVALID_PAYMENT);
     }
 
     @Test
     public void given_two_sequential_marshaller_requests_then_a_single_marshaller_will_be_used() throws Exception {
-        assertEquals(0, Marshallers.getNumberOfMarshallers(Payment.class));
+        assertEquals(0, marshallers.getNumberOfMarshallers(Payment.class));
 
-        Marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
-        Marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
+        marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
+        marshallers.marshall(MarshallerUtils.toStringMarshaller, VALID_PAYMENT);
 
-        assertEquals(1, Marshallers.getNumberOfMarshallers(Payment.class));
+        assertEquals(1, marshallers.getNumberOfMarshallers(Payment.class));
     }
 
     @Test
     public void given_two_nested_marshaller_requests_then_two_marshallers_will_be_used() throws Exception {
-        assertEquals(0, Marshallers.getNumberOfMarshallers(Payment.class));
+        assertEquals(0, marshallers.getNumberOfMarshallers(Payment.class));
 
-        Marshallers.marshall((m1, o1) -> {
-            Marshallers.marshall((m2, o2) -> {
+        marshallers.marshall((m1, o1) -> {
+            marshallers.marshall((m2, o2) -> {
                 assertTrue(m1 != m2);
                 return "";
             }, VALID_PAYMENT);
             return "";
         }, VALID_PAYMENT);
 
-        assertEquals(2, Marshallers.getNumberOfMarshallers(Payment.class));
+        assertEquals(2, marshallers.getNumberOfMarshallers(Payment.class));
     }
 }

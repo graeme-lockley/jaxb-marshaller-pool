@@ -25,9 +25,10 @@ public class MarshallersConcurrencyTest {
     public static final int NUMBER_OF_THREADS = 100;
     public static final int ITERATIONS_PER_THREAD = 100;
 
+    private Marshallers marshallers = new Marshallers();
+
     @Before
     public void before() {
-        Marshallers.reset();
         MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerPoolImpl::new;
     }
 
@@ -40,10 +41,10 @@ public class MarshallersConcurrencyTest {
     public void given_multiple_threads_simulating_marshall_then_the_activate_passivate_auditing_should_be_fine() throws Exception {
         AtomicBoolean anyErrors = new AtomicBoolean(false);
 
-        Marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
+        marshallers.attachSchema(Payment.class, PAYMENT_SCHEMA);
         ExecutorService es = Executors.newCachedThreadPool();
         for (int lp = 0; lp < NUMBER_OF_THREADS; lp += 1) {
-            es.execute(new MarshallerThread(anyErrors, VALID_PAYMENT));
+            es.execute(new MarshallerThread(marshallers, anyErrors, VALID_PAYMENT));
         }
         es.shutdown();
         assertTrue(es.awaitTermination(1, TimeUnit.HOURS));
@@ -52,10 +53,11 @@ public class MarshallersConcurrencyTest {
 }
 
 class MarshallerThread implements Runnable {
-    private AtomicBoolean anyErrors;
+    private final Marshallers marshallers;
+    private final AtomicBoolean anyErrors;
     private final Payment payment;
 
-    public static BiFunctionWithCE<String, JAXBException> toStringMarshallerWithRandomDelay = (m, o) -> {
+    private static BiFunctionWithCE<String, JAXBException> toStringMarshallerWithRandomDelay = (m, o) -> {
         StringWriter stringWriter = new StringWriter();
         m.marshal(o, stringWriter);
 
@@ -67,7 +69,8 @@ class MarshallerThread implements Runnable {
         return stringWriter.toString();
     };
 
-    public MarshallerThread(AtomicBoolean anyErrors, Payment payment) {
+    public MarshallerThread(Marshallers marshallers, AtomicBoolean anyErrors, Payment payment) {
+        this.marshallers = marshallers;
         this.anyErrors = anyErrors;
         this.payment = payment;
     }
@@ -77,7 +80,7 @@ class MarshallerThread implements Runnable {
         try {
             for (int lp = 0; lp < MarshallersConcurrencyTest.ITERATIONS_PER_THREAD; lp += 1) {
                 try {
-                    Marshallers.marshall(toStringMarshallerWithRandomDelay, payment);
+                    marshallers.marshall(toStringMarshallerWithRandomDelay, payment);
                 } catch (JAXBException ex) {
                     throw new RuntimeException(ex);
                 }

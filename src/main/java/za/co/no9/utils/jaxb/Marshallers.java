@@ -6,9 +6,9 @@ import javax.xml.validation.Schema;
 import java.util.Optional;
 
 public class Marshallers {
-    private static MarshallersPool POOL_CONFIGURATION = new MarshallersPool();
+    private MarshallersPool marshallersPool = new MarshallersPool();
 
-    public static <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
+    public <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
         MarshallerPool marshallerPoolImpl = get(object.getClass());
         Marshaller marshaller = null;
         try {
@@ -19,24 +19,24 @@ public class Marshallers {
         }
     }
 
-    public static void reset() {
-        POOL_CONFIGURATION.clear();
+    public void reset() {
+        marshallersPool.clear();
     }
 
-    public static void attachSchema(Class classToBind, Schema schema) {
+    public void attachSchema(Class classToBind, Schema schema) {
         MarshallerPool configuration = get(classToBind);
-        POOL_CONFIGURATION.rebind(configuration.attachSchema(schema));
+        marshallersPool.rebind(configuration.attachSchema(schema));
     }
 
-    public static long getNumberOfMarshallers(Class classToBind) {
+    public long getNumberOfMarshallers(Class classToBind) {
         return get(classToBind).getNumberOfMarshallers();
     }
 
-    private static MarshallerPool get(Class  classToBind) {
-        MarshallerPool configuration = POOL_CONFIGURATION.get(classToBind);
+    private MarshallerPool get(Class  classToBind) {
+        MarshallerPool configuration = marshallersPool.get(classToBind);
         if (configuration == null) {
             configuration = MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION.apply(classToBind, Optional.empty());
-            POOL_CONFIGURATION.rebind(configuration);
+            marshallersPool.rebind(configuration);
         }
         return configuration;
     }
