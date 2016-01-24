@@ -6,10 +6,6 @@ import java.util.Map;
 class MarshallersPool {
     private final Map<String, MarshallerPool> configuration_items = new HashMap<>();
 
-    public synchronized void clear() {
-        configuration_items.clear();
-    }
-
     public synchronized MarshallerPool get(Class classToBind) {
         return configuration_items.get(configurationKey(classToBind));
     }

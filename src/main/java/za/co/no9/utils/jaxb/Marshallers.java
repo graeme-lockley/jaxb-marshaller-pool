@@ -19,10 +19,6 @@ public class Marshallers {
         }
     }
 
-    public void reset() {
-        marshallersPool.clear();
-    }
-
     public void attachSchema(Class classToBind, Schema schema) {
         MarshallerPool configuration = get(classToBind);
         marshallersPool.rebind(configuration.attachSchema(schema));
