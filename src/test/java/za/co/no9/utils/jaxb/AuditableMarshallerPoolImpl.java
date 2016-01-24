@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class AuditableMarshallerPoolImpl implements MarshallerPool {
+class AuditableMarshallerPoolImpl implements MarshallerPool {
     private Set<Marshaller> inCache = new HashSet<>();
     private Set<Marshaller> inUse = new HashSet<>();
 
