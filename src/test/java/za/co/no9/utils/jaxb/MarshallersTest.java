@@ -1,8 +1,6 @@
 package za.co.no9.utils.jaxb;
 
 import generated.Payment;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.validation.Schema;
@@ -21,16 +19,6 @@ public class MarshallersTest {
     private static Schema PAYMENT_SCHEMA = loadSchema("target/test-classes/Payment.xsd");
 
     private Marshallers marshallers = new Marshallers();
-
-    @Before
-    public void before() {
-        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerPoolImpl::new;
-    }
-
-    @After
-    public void after() {
-        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = MarshallerPoolImpl::new;
-    }
 
     @Test
     public void given_a_valid_payment_without_schema_validation_should_marshall_to_a_string() throws Exception {

@@ -4,9 +4,19 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 public class Marshallers {
-    private MarshallersPool marshallersPool = new MarshallersPool();
+    private BiFunction<Class, Optional<Schema>, MarshallerPool> createMarshallerConfiguration;
+    private final MarshallersPool marshallersPool = new MarshallersPool();
+
+    public Marshallers(BiFunction<Class, Optional<Schema>, MarshallerPool> createMarshallerConfiguration) {
+        this.createMarshallerConfiguration = createMarshallerConfiguration;
+    }
+
+    public Marshallers() {
+        this(MarshallerPoolImpl::new);
+    }
 
     public <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
         MarshallerPool marshallerPoolImpl = get(object.getClass());
@@ -28,10 +38,10 @@ public class Marshallers {
         return get(classToBind).getNumberOfMarshallers();
     }
 
-    private MarshallerPool get(Class  classToBind) {
+    private MarshallerPool get(Class classToBind) {
         MarshallerPool configuration = marshallersPool.get(classToBind);
         if (configuration == null) {
-            configuration = MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION.apply(classToBind, Optional.empty());
+            configuration = createMarshallerConfiguration.apply(classToBind, Optional.empty());
             marshallersPool.rebind(configuration);
         }
         return configuration;

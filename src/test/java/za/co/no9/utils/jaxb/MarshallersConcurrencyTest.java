@@ -1,8 +1,6 @@
 package za.co.no9.utils.jaxb;
 
 import generated.Payment;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBException;
@@ -25,17 +23,7 @@ public class MarshallersConcurrencyTest {
     public static final int NUMBER_OF_THREADS = 100;
     public static final int ITERATIONS_PER_THREAD = 100;
 
-    private Marshallers marshallers = new Marshallers();
-
-    @Before
-    public void before() {
-        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerPoolImpl::new;
-    }
-
-    @After
-    public void after() {
-        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = MarshallerPoolImpl::new;
-    }
+    private Marshallers marshallers = new Marshallers(AuditableMarshallerPoolImpl::new);
 
     @Test
     public void given_multiple_threads_simulating_marshall_then_the_activate_passivate_auditing_should_be_fine() throws Exception {

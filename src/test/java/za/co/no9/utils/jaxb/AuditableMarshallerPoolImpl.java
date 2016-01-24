@@ -55,7 +55,7 @@ class AuditableMarshallerPoolImpl implements MarshallerPool {
 
     @Override
     public MarshallerPool attachSchema(Schema schema) {
-        return marshallerPool.attachSchema(schema);
+        return new AuditableMarshallerPoolImpl(getClassToMarshall(), Optional.of(schema));
     }
 
     @Override

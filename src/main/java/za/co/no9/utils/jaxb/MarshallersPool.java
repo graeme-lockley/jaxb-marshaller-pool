@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 class MarshallersPool {
-    private final Map<String, MarshallerPool> configuration_items = new HashMap<>();
+    private final Map<String, MarshallerPool> configurationItems = new HashMap<>();
 
     public synchronized MarshallerPool get(Class classToBind) {
-        return configuration_items.get(configurationKey(classToBind));
+        return configurationItems.get(configurationKey(classToBind));
     }
 
     public synchronized void rebind(MarshallerPool marshallerPool) {
-        this.configuration_items.put(configurationKey(marshallerPool.getClassToMarshall()), marshallerPool);
+        this.configurationItems.put(configurationKey(marshallerPool.getClassToMarshall()), marshallerPool);
     }
 
     private static String configurationKey(Class theClass) {
