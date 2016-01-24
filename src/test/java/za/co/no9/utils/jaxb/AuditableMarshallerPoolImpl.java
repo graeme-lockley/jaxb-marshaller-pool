@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class AuditableMarshallerConfiguration extends MarshallerConfiguration {
+public class AuditableMarshallerPoolImpl extends MarshallerPoolImpl {
     private Set<Marshaller> inCache = new HashSet<>();
     private Set<Marshaller> inUse = new HashSet<>();
 
-    public AuditableMarshallerConfiguration(Class classToMarshall, Optional<Schema> schema) {
+    public AuditableMarshallerPoolImpl(Class classToMarshall, Optional<Schema> schema) {
         super(classToMarshall, schema);
     }
 

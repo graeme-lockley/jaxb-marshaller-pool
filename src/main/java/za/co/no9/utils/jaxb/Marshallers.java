@@ -9,13 +9,13 @@ public class Marshallers {
     private static MarshallersPool POOL_CONFIGURATION = new MarshallersPool();
 
     public static <R> R marshall(BiFunctionWithCE<R, JAXBException> function, Object object) throws JAXBException {
-        MarshallerConfiguration marshallerConfiguration = get(object.getClass());
+        MarshallerPool marshallerPoolImpl = get(object.getClass());
         Marshaller marshaller = null;
         try {
-            marshaller = marshallerConfiguration.activateMarshaller();
+            marshaller = marshallerPoolImpl.activateMarshaller();
             return function.apply(marshaller, object);
         } finally {
-            marshallerConfiguration.passivateMarshaller(marshaller);
+            marshallerPoolImpl.passivateMarshaller(marshaller);
         }
     }
 
@@ -24,18 +24,18 @@ public class Marshallers {
     }
 
     public static void attachSchema(Class classToBind, Schema schema) {
-        MarshallerConfiguration configuration = get(classToBind);
+        MarshallerPool configuration = get(classToBind);
         POOL_CONFIGURATION.rebind(configuration.attachSchema(schema));
     }
 
     public static long getNumberOfMarshallers(Class classToBind) {
-        return get(classToBind).getMarshallers().count();
+        return get(classToBind).getNumberOfMarshallers();
     }
 
-    private static MarshallerConfiguration get(Class  classToBind) {
-        MarshallerConfiguration configuration = POOL_CONFIGURATION.get(classToBind);
+    private static MarshallerPool get(Class  classToBind) {
+        MarshallerPool configuration = POOL_CONFIGURATION.get(classToBind);
         if (configuration == null) {
-            configuration = MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION.apply(classToBind, Optional.empty());
+            configuration = MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION.apply(classToBind, Optional.empty());
             POOL_CONFIGURATION.rebind(configuration);
         }
         return configuration;

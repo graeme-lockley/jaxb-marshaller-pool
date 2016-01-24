@@ -23,12 +23,12 @@ public class MarshallersTest {
     @Before
     public void before() {
         Marshallers.reset();
-        MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerConfiguration::new;
+        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = AuditableMarshallerPoolImpl::new;
     }
 
     @After
     public void after() {
-        MarshallerConfiguration.CREATE_MARSHALLER_CONFIGURATION = MarshallerConfiguration::new;
+        MarshallerPoolImpl.CREATE_MARSHALLER_CONFIGURATION = MarshallerPoolImpl::new;
     }
 
     @Test

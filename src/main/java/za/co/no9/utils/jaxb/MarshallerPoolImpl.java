@@ -8,22 +8,24 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-public class MarshallerConfiguration implements MarshallerPool {
-    public static BiFunction<Class, Optional<Schema>, MarshallerConfiguration> CREATE_MARSHALLER_CONFIGURATION = MarshallerConfiguration::new;
+public class MarshallerPoolImpl implements MarshallerPool {
+    public static BiFunction<Class, Optional<Schema>, MarshallerPool> CREATE_MARSHALLER_CONFIGURATION = MarshallerPoolImpl::new;
 
     private final Class classToMarshall;
     private final Optional<Schema> schema;
     private final Pool<Marshaller> marshallers = new Pool<>(this::newInstance);
 
-    public MarshallerConfiguration(Class classToMarshall, Optional<Schema> schema) {
+    public MarshallerPoolImpl(Class classToMarshall, Optional<Schema> schema) {
         this.classToMarshall = classToMarshall;
         this.schema = schema;
     }
 
+    @Override
     public Marshaller activateMarshaller() throws JAXBException {
         return marshallers.activate();
     }
 
+    @Override
     public void passivateMarshaller(Marshaller marshaller) {
         marshallers.passivate(marshaller);
     }
@@ -42,12 +44,19 @@ public class MarshallerConfiguration implements MarshallerPool {
         return marshall;
     }
 
+    @Override
     public Class getClassToMarshall() {
         return classToMarshall;
     }
 
-    public MarshallerConfiguration attachSchema(Schema schema) {
+    @Override
+    public MarshallerPool attachSchema(Schema schema) {
         return CREATE_MARSHALLER_CONFIGURATION.apply(classToMarshall, Optional.of(schema));
+    }
+
+    @Override
+    public long getNumberOfMarshallers() {
+        return marshallers.stream().count();
     }
 
     protected Stream<Marshaller> getMarshallers() {
