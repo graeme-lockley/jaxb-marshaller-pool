@@ -7,17 +7,19 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class AuditableMarshallerPoolImpl extends MarshallerPoolImpl {
+public class AuditableMarshallerPoolImpl implements MarshallerPool {
     private Set<Marshaller> inCache = new HashSet<>();
     private Set<Marshaller> inUse = new HashSet<>();
 
+    private MarshallerPool marshallerPool;
+
     public AuditableMarshallerPoolImpl(Class classToMarshall, Optional<Schema> schema) {
-        super(classToMarshall, schema);
+        marshallerPool = new MarshallerPoolImpl(classToMarshall, schema);
     }
 
     @Override
     public Marshaller activateMarshaller() throws JAXBException {
-        Marshaller marshaller = super.activateMarshaller();
+        Marshaller marshaller = marshallerPool.activateMarshaller();
 
         synchronized (this) {
             if (inUse.contains(marshaller)) {
@@ -43,6 +45,21 @@ public class AuditableMarshallerPoolImpl extends MarshallerPoolImpl {
                 inCache.add(marshaller);
             }
         }
-        super.passivateMarshaller(marshaller);
+        marshallerPool.passivateMarshaller(marshaller);
+    }
+
+    @Override
+    public Class getClassToMarshall() {
+        return marshallerPool.getClassToMarshall();
+    }
+
+    @Override
+    public MarshallerPool attachSchema(Schema schema) {
+        return marshallerPool.attachSchema(schema);
+    }
+
+    @Override
+    public long getNumberOfMarshallers() {
+        return marshallerPool.getNumberOfMarshallers();
     }
 }
